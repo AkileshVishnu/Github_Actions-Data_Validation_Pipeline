@@ -1,0 +1,38 @@
+name: Data validation
+
+on:
+#We are defining Github action whenever there is a push to the main branch
+  push:
+    branches:
+    - main
+
+jobs:
+  validation-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+#Step-1 : This will pick and move the code from the local to the ubuntu machine
+    - name: Checkout Code
+      uses: actions/checkout@v2
+#Step-2 : installing python to the new machine
+    - name: Setting up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+#Step-3 : Install all the dependencies
+    - name: Libraries Installations
+      run: pip install pandas datetime
+#Step-4 : Running the script
+    - name: Run the script
+      run: python app.py
+#Step-5 : So now the logs will be generated on the new machine. We are setting up a action to main branch of our Github Repo
+# Note: By Default Github action has permission only to Read data from repo and we have to change it to write
+# Settings -> Git Action -> Workflow permission -> Read and write -> save
+    - name: Publish files to github repo
+      uses: mikeal/publish-to-github-action@master
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        BRANCH_NAME: 'main'
+
+
+
